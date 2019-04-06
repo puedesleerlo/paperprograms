@@ -1,5 +1,5 @@
 const path = require('path');
-
+const StringReplacePlugin = require('string-replace-webpack-plugin')
 module.exports = {
   entry: {
     camera: ['./client/camera/entry.js'],
@@ -10,6 +10,14 @@ module.exports = {
   output: {
     path: path.join(__dirname, 'www'),
     filename: '[name].js',
+  },
+  // node: {
+  //   fs: 'empty'
+  // },
+  resolve: {
+    alias: {
+			fs: path.join(__dirname, './virtual-fs.js')
+		}
   },
   module: {
     rules: [
@@ -36,14 +44,27 @@ module.exports = {
         ],
       },
       // Per https://github.com/devongovett/pdfkit/issues/659#issuecomment-321452649
+      { enforce: 'post', test: /fontkit[/\\]index.js$/, loader: "transform-loader?brfs" },
+      { enforce: 'post', test: /unicode-properties[/\\]index.js$/, loader: "transform-loader?brfs" },
+      { enforce: 'post', test: /linebreak[/\\]src[/\\]linebreaker.js/, loader: "transform-loader?brfs" },
       {
-        test: /node_modules\/(pdfkit|fontkit|png-js|linebreak|unicode-properties|brotli)\//,
-        loader: 'transform-loader?brfs',
-      },
-      {
-        test: /node_modules\/unicode-properties.*\.json$/,
-        use: 'json-loader',
-      },
+				test: /fontkit[/\\]index.js$/, loader: StringReplacePlugin.replace({
+					replacements: [
+						{
+							pattern: /fs\./g,
+							replacement: function () {
+								return 'require(\'fs\').';
+							}
+						}
+					]
+				})
+			},
+      { test: /src[/\\]assets/, loader: 'arraybuffer-loader'},
+      { test: /\.afm$/, loader: 'raw-loader'}
+      // {
+      //   test: /node_modules\/(unicode-properties|fontkit).*\.json$/,
+      //   use: 'json-loader',
+      // },
     ],
   },
   plugins: [

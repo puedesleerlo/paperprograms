@@ -265,6 +265,7 @@ export default class Program extends React.Component {
 
   renderIframe() {
     const iframeHeight = iframeWidth * this.state.paperRatio;
+    const iframeId = "page-"+this.props.programNumber
     const iframeStyle = {
       position: 'absolute',
       left: 0,
@@ -276,6 +277,6 @@ export default class Program extends React.Component {
       zIndex: 1,
     };
 
-    return <iframe key="iframe" src={this.state.iframe.src} style={{ ...iframeStyle }} />;
+    return <iframe id={iframeId} class="emma" key="iframe" src={this.state.iframe.src} style={{ ...iframeStyle }} />;
   }
 }

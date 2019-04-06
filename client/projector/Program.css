@@ -13,3 +13,8 @@
 :local(.canvasWithChangedCode) {
   animation: blink-animation 3s infinite;
 }
+
+.emma {
+  overflow-y: scroll;
+  z-index: 99 !important; 
+}
